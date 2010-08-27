@@ -19,8 +19,49 @@
 """This module provides functions to extract data from Hamster DB
 """
 
+from os import path
+import json
+
 from hamster_task import HamsterTask
 from hamster_db import HamsterDB
+from config import Config
+
+
+class Cobaya(object):
+
+    def __init__(self):
+        conf = Config()
+        conf.load()
+        self.log_file = conf.get_option('hamster.log_file')
+        self.ids = []
+        if path.exists(self.log_file):
+            f = file(self.log_file, 'r')
+            self.ids = f.readlines()
+        else:
+            f = file(self.log_file, 'w')
+            f.close()
+
+        self.tasks = get_all_tasks()
+
+        for id in self.tasks:
+            str_id = ('%d\n' % id)
+            if str_id in self.ids:
+                self.tasks[id].remote_sync = True
+
+
+    def generate_unsynced_data(self):
+        news_id = []
+        data = []
+        for id in self.tasks:
+            if self.tasks[id].remote_sync == False and \
+               self.tasks[id].time != 0.0: # not synced or not finished
+                data.append(self.tasks[id].to_dict())
+                self.tasks[id].remote_sync = True
+                news_id.append("%d\n" % id)
+        f = file(self.log_file, 'a')
+        f.writelines(news_id)
+        f.close()
+        return data
 
 
 def get_all_tasks():
@@ -32,9 +73,11 @@ def get_all_tasks():
     db.close_connection()
 
     fact_list = [x[0] for x in result]
-    tasks = []
+    tasks = {}
 
     for fact_id in fact_list:
-        tasks.append(HamsterTask(fact_id))
+        rt = HamsterTask(fact_id).get_remote_task()
+        tasks[rt.task_id] = rt
 
+    print 'Obtained %d tasks' % len(tasks)
     return tasks
