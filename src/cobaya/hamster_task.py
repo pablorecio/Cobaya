@@ -20,8 +20,8 @@ convert it to easy-to-handle data"""
 
 from datetime import datetime
 
-from hamster_db import HamsterDB
-from remote_task import RemoteTask
+from cobaya.hamster_db import HamsterDB
+from cobaya.remote_task import RemoteTask
 
 
 class HamsterTask(object):

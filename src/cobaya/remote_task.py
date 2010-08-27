@@ -35,7 +35,7 @@ class RemoteTask(object):
 
     def to_dict(self):
         data = {'ticket': self.ticket_number, 'project': self.project,
-                'date': self.date, 'time': self.time}
+                'date': self.date, 'time': self.time, 'task_id': self.task_id}
         return data
 
     def to_json(self):

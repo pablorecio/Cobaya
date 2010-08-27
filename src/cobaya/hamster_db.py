@@ -18,7 +18,7 @@
 
 import sqlite3
 
-from config import Config
+from cobaya.config import Config
 
 
 class HamsterDB(object):
