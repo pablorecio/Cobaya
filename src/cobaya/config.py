@@ -31,7 +31,8 @@ class Config(object):
 
     default_conf = """
 [hamster]
-db = ~/.hamster.db
+db = ~/.local/share/hamster-applet/hamster.db
+log_file = ~/.local/share/hamster-applet/synced-tasks.dat
 
 [remote]
 url =

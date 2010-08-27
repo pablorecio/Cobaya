@@ -18,12 +18,16 @@
 
 import sqlite3
 
-db_filepath = '/home/precio/.local/share/hamster-applet/hamster.db'  # temp
+from config import Config
+
 
 class HamsterDB(object):
 
 
     def __init__(self):
+        conf = Config()
+        conf.load()
+        db_filepath = conf.get_option('hamster.db')
         self.connection = sqlite3.connect(db_filepath)
 
         categories_result = self.query("SELECT * FROM categories")
