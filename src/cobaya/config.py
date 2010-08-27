@@ -31,7 +31,7 @@ class Config(object):
 
     default_conf = """
 [hamster]
-db = ~/.hamster.db
+db = ~/.local/share/hamster-applet/hamster.db
 
 [remote]
 url =

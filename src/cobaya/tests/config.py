@@ -70,7 +70,8 @@ class ConfigTests(unittest.TestCase):
         conf.load()
         user_path = os.path.join(self.temp_root, 'home', 'user')
         self.assertEquals(conf.get_option('hamster.db'),
-                          os.path.join(user_path, '.hamster.db'))
+                          os.path.join(user_path, '.local', 'share',
+                                       'hamster-applet', 'hamster.db'))
         self.assertEquals(conf.get_option('remote.url'), '')
         self.assertEquals(conf.get_option('remote.user'), '')
         self.assertEquals(conf.get_option('remote.password'), '')
