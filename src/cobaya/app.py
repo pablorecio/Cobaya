@@ -16,8 +16,10 @@
 #               2010, Lorenzo Gil Sanchez <lgs@yaco.es>                       #
 ###############################################################################
 
+from optparse import OptionParser
 from os import path
 
+from cobaya import version_string
 from cobaya.hamster_task import HamsterTask
 from cobaya.hamster_db import HamsterDB
 from cobaya.config import Config
@@ -26,9 +28,9 @@ from cobaya.remote_server import RemoteServer
 
 class CobayaApp(object):
 
-    def __init__(self):
+    def __init__(self, options):
         conf = Config()
-        conf.load()
+        conf.load(options.config_file)
         self.log_file = conf.get_option('hamster.log_file')
         self.ids = []
         if path.exists(self.log_file):
@@ -89,7 +91,13 @@ def get_all_tasks():
 
 
 def main():
-    cob = CobayaApp()
+    parser = OptionParser(usage="usage: %prog [options]",
+                          version="%prog " + version_string)
+    parser.add_option("-c", "--config", dest="config_file", default=None,
+                      help="configuration file to use")
+    (options, args) = parser.parse_args()
+
+    cob = CobayaApp(options)
 
     cob.perform_notification()
 
