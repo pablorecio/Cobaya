@@ -18,13 +18,15 @@
 import os
 from setuptools import setup, find_packages
 
+from cobaya import version_string
+
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
     name="Cobaya",
-    version="0.1dev",
+    version=version_string,
     author="Pablo Recio Quijano",
     author_email="precio@yaco.es",
     description="Command line programm to send Hamster task to a remote system",
