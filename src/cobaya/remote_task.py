@@ -16,11 +16,27 @@
 # Copyright (C) 2010, Pablo Recio Quijano, <precio@yaco.es>                   #
 ###############################################################################
 
-"""This file contains the global configuration variables needed
-in the application.
-"""
+import json
 
-import os
 
-HOME = os.environ['HOME'] #damn it, ~ do not work on sqlite3
-HAMSTER_APPLET_DB = '%s/.local/share/hamster-applet/hamster.db' % HOME
+class RemoteTask(object):
+    """ Represent a task ready to be send to a remote server
+    """
+
+
+    def __init__(self, task_id, ticket_number, project,
+                 date, time, remote_sync=False):
+        self.task_id = task_id
+        self.ticket_number = ticket_number
+        self.project = project
+        self.date = date
+        self.time = time / 60 / 24 # in hoursº
+        self.remote_sync = remote_sync
+
+    def to_dict(self):
+        data = {'ticket': self.ticket_number, 'project': self.project,
+                'date': self.date, 'time': self.time, 'task_id': self.task_id}
+        return data
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
