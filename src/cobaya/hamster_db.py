@@ -18,15 +18,11 @@
 
 import sqlite3
 
-from cobaya.config import Config
-
 
 class HamsterDB(object):
 
 
-    def __init__(self):
-        conf = Config()
-        conf.load()
+    def __init__(self, conf):
         db_filepath = conf.get_option('hamster.db')
         self.connection = sqlite3.connect(db_filepath)
 
