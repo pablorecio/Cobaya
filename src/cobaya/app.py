@@ -29,9 +29,9 @@ from cobaya.remote_server import RemoteServer
 class CobayaApp(object):
 
     def __init__(self, options):
-        conf = Config()
-        conf.load(options.config_file)
-        self.log_file = conf.get_option('hamster.log_file')
+        self.conf = Config()
+        self.conf.load(options.config_file)
+        self.log_file = self.conf.get_option('hamster.log_file')
         self.ids = []
         if path.exists(self.log_file):
             f = file(self.log_file, 'r')
@@ -59,7 +59,7 @@ class CobayaApp(object):
     def perform_notification(self):
         unsynced_data = self.generate_unsynced_data()
 
-        server = RemoteServer()
+        server = RemoteServer(self.conf)
         synced_tasks = server.send_tasks(unsynced_data)
         news_id = []
         for task in synced_tasks:
@@ -104,4 +104,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

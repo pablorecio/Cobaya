@@ -19,15 +19,10 @@
 import httplib2
 import json
 
-from cobaya.config import Config
-
 
 class RemoteServer(object):
 
-    def __init__(self):
-        conf = Config()
-        conf.load()
-
+    def __init__(self, conf):
         self.url = conf.get_option('remote.url')
         user = conf.get_option('remote.user')
         passwd = conf.get_option('remote.password')
