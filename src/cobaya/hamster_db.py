@@ -21,7 +21,6 @@ import sqlite3
 
 class HamsterDB(object):
 
-
     def __init__(self, conf):
         db_filepath = conf.get_option('hamster.db')
         self.connection = sqlite3.connect(db_filepath)
@@ -32,7 +31,7 @@ class HamsterDB(object):
             self.categories[row[0]] = row[1]
 
         tags_result = self.query("SELECT * FROM tags")
-        self.tags ={}
+        self.tags = {}
         for row in tags_result:
             self.tags[row[0]] = row[1]
 

@@ -47,12 +47,11 @@ class CobayaApp(object):
             if str_id in self.ids:
                 self.tasks[id].remote_sync = True
 
-
     def generate_unsynced_data(self):
         data = []
         for id in self.tasks:
             if self.tasks[id].remote_sync == False and \
-               self.tasks[id].time != 0.0: # not synced or not finished
+               self.tasks[id].time != 0.0:  # not synced or not finished
                 data.append(self.tasks[id].to_dict())
         return data
 
