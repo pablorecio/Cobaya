@@ -38,6 +38,11 @@ log_file = ~/.local/share/hamster-applet/synced-tasks.dat
 url =
 user =
 password =
+
+[tasks]
+ticket_field = activity
+project_field = tags
+description_field = description
 """
 
     def __init__(self):

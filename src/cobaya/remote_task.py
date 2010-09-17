@@ -25,17 +25,20 @@ class RemoteTask(object):
 
 
     def __init__(self, task_id, ticket_number, project,
-                 date, time, remote_sync=False):
+                 date, time, description, remote_sync=False):
+
         self.task_id = task_id
+        self.date = date
+        self.time = time / 60 / 60 # in hours
+        self.remote_sync = remote_sync
         self.ticket_number = ticket_number
         self.project = project
-        self.date = date
-        self.time = time / 60 / 60 # in hoursº
-        self.remote_sync = remote_sync
+        self.description = description
 
     def to_dict(self):
         data = {'ticket': self.ticket_number, 'project': self.project,
-                'date': self.date, 'time': self.time, 'task_id': self.task_id}
+                'date': self.date, 'time': self.time, 'task_id': self.task_id,
+                'description': self.description}
         return data
 
     def to_json(self):

@@ -38,10 +38,6 @@ class RemoteServer(object):
         responses['not_found'] = []
         responses['server_error'] = []
         for task in data:
-            if task['project'] == 'cice-buscador':
-                task['project'] = 'CICE-buscador'
-            if task['project'] == 'cice-parser':
-                task['project'] = 'CICE-parser'
             json_data = json.dumps(task)
             response = self.http.request(method="POST",
                                          uri=self.url,

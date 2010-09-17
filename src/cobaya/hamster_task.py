@@ -18,6 +18,7 @@
 """ This module provides some classes to extract data from Hamster DB and
 convert it to easy-to-handle data"""
 
+import re
 from datetime import datetime
 
 from cobaya.hamster_db import HamsterDB
@@ -38,12 +39,14 @@ class HamsterTask(object):
 
     def __init__(self, fact_id, conf):
 
-        db = HamsterDB(conf)
+        self.conf = conf
+        db = HamsterDB(self.conf)
         result = db.query("SELECT * FROM facts WHERE id = %s" % fact_id)
 
         self.id = fact_id
         self.start_time = result[0][2]
         self.end_time = result[0][3]
+        self.description = result[0][4]
         if self.end_time:
             self.elapsed_time = _elapsed_time(self.start_time, self.end_time)
         else:
@@ -65,19 +68,30 @@ class HamsterTask(object):
         for row in result:
             self.tags.append(db.tags[row[1]])
 
+        if len(self.tags) > 0:
+            self.tag = self.tags[0] or ''  # first tag
+        else:
+            self.tag = ''
+
         db.close_connection()
 
     def get_remote_task(self):
+        ticket_field = self.conf.get_option('tasks.ticket_field')
+        project_field = self.conf.get_option('tasks.project_field')
+        description_field = self.conf.get_option('tasks.description_field')
 
-        # at the beginning, default configuration
-        ticket_number = self.activity[self.activity.find(u'#') + 1:]
-        if len(self.tags) != 0:
-            project = self.tags[0]
+        dict_data = self.__dict__
+        description = dict_data[description_field]
+        project_name = dict_data[project_field]
+        ticket_pattern = re.compile('#\d+')
+        ticket_match = ticket_pattern.search(dict_data[ticket_field])
+        if ticket_match:
+            ticket_number = int(ticket_match.group()[1:])
         else:
-            project = ''
+            ticket_number = 0
 
-        return RemoteTask(self.id, ticket_number, project, self.start_time[:10],
-                          self.elapsed_time)
+        return RemoteTask(self.id, ticket_number, project_name, self.start_time[:10],
+                          self.elapsed_time, description)
 
 
 def _elapsed_time(begin_time, end_time):
