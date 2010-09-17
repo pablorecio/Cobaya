@@ -36,7 +36,6 @@ class HamsterTask(object):
       * time expended
     """
 
-
     def __init__(self, fact_id, conf):
 
         self.conf = conf
@@ -54,14 +53,16 @@ class HamsterTask(object):
 
         activity_id = result[0][1]
 
-        result = db.query("SELECT * FROM activities WHERE id = %s" % activity_id)
+        result = db.query("SELECT * FROM activities WHERE id = %s"
+                          % activity_id)
 
         self.activity = result[0][1]
 
         category_id = result[0][5]
         self.category = db.categories[category_id]
 
-        result = db.query("SELECT * FROM fact_tags WHERE fact_id = %s" % fact_id)
+        result = db.query("SELECT * FROM fact_tags WHERE fact_id = %s"
+                          % fact_id)
 
         self.tags = []
 
@@ -90,8 +91,9 @@ class HamsterTask(object):
         else:
             ticket_number = 0
 
-        return RemoteTask(self.id, ticket_number, project_name, self.start_time[:10],
-                          self.elapsed_time, description)
+        return RemoteTask(self.id, ticket_number, project_name,
+                          self.start_time[:10], self.elapsed_time,
+                          description)
 
 
 def _elapsed_time(begin_time, end_time):
