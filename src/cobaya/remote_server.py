@@ -19,6 +19,11 @@
 import httplib2
 import json
 
+import logging
+
+LOG_FILENAME = 'cobaya.log'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+
 
 class RemoteServer(object):
 
@@ -47,12 +52,27 @@ class RemoteServer(object):
 
             if response[0]['status'] == '200':
                 responses['accepted'].append(task)
+                logging.info("Ticket %s of %s project done on %s synced" % (task['ticket'],
+                                                                           task['project'],
+                                                                           task['date']))
             elif response[0]['status'] == '400':  # bad request
                 responses['rejected'].append(task)
+                logging.error("Ticket %s of %s project done on %s " \
+                             "is not allowed on the webservice" % (task['ticket'],
+                                                                   task['project'],
+                                                                   task['date']))
             elif response[0]['status'] == '404':  # not found
                 responses['not_found'].append(task)
+                logging.error("Ticket %s of %s project done on %s " \
+                             "is not found on the webservice" % (task['ticket'],
+                                                                 task['project'],
+                                                                 task['date']))
             elif response[0]['status'] == '409':  # conflict
                 responses['duplicated'].append(task)
+                logging.warning("Ticket %s of %s project done on %s " \
+                               "is already register" % (task['ticket'],
+                                                        task['project'],
+                                                        task['date']))
             elif response[0]['status'] == '500':  # server error
                 responses['server_error'].append(task)
 
