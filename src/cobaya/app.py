@@ -60,8 +60,9 @@ class CobayaApp(object):
         unsynced_data = self.generate_unsynced_data()
 
         server = RemoteServer(self.conf)
-        synced_tasks = server.send_tasks(unsynced_data)
+        responses = server.send_tasks(unsynced_data)
         news_id = []
+        synced_tasks = responses['accepted'] + responses['duplicated']
         for task in synced_tasks:
             id = task['task_id']
             news_id.append("%d\n" % id)

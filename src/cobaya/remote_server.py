@@ -31,22 +31,33 @@ class RemoteServer(object):
         self.http.add_credentials(user, passwd)
 
     def send_tasks(self, data):
-        json_data = json.dumps(data)
-        response = self.http.request(method="POST",
-                                     uri=self.url,
-                                     headers={'content-type':
-                                              'application/json'},
-                                     body=json_data)
+        responses = {}
+        responses['accepted'] = []
+        responses['duplicated'] = []
+        responses['rejected'] = []
+        responses['not_found'] = []
+        responses['server_error'] = []
+        for task in data:
+            if task['project'] == 'cice-buscador':
+                task['project'] = 'CICE-buscador'
+            if task['project'] == 'cice-parser':
+                task['project'] = 'CICE-parser'
+            json_data = json.dumps(task)
+            response = self.http.request(method="POST",
+                                         uri=self.url,
+                                         headers={'content-type':
+                                                  'application/json'},
+                                         body=json_data)
 
-        if response[0]['status'] == '200':
-            response_data = json.loads(response[1])
+            if response[0]['status'] == '200':
+                responses['accepted'].append(task)
+            elif response[0]['status'] == '400':  # bad request
+                responses['rejected'].append(task)
+            elif response[0]['status'] == '404':  # not found
+                responses['not_found'].append(task)
+            elif response[0]['status'] == '409':  # conflict
+                responses['duplicated'].append(task)
+            elif response[0]['status'] == '500':  # server error
+                responses['server_error'].append(task)
 
-            sended_data = [d.items() for d in data]
-            responsed_data = [d.items() for d in response_data]
-
-            temp_accepted_data = list(set(sended_data).intersection(set(responsed_data)))
-            accepted_data = [dict(i) for i in temp_accepted_data]
-
-            return accepted_data
-
-        return []
+        return responses
