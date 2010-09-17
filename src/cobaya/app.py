@@ -40,7 +40,7 @@ class CobayaApp(object):
             f = file(self.log_file, 'w')
             f.close()
 
-        self.tasks = get_all_tasks()
+        self.tasks = get_all_tasks(self.conf)
 
         for id in self.tasks:
             str_id = ('%d\n' % id)
@@ -71,11 +71,11 @@ class CobayaApp(object):
         f.close()
 
 
-def get_all_tasks():
+def get_all_tasks(conf):
     """Returns a list with every task registred on Hamster.
     """
 
-    db = HamsterDB()
+    db = HamsterDB(conf)
     result = db.query("SELECT id FROM facts")
     db.close_connection()
 
@@ -83,7 +83,7 @@ def get_all_tasks():
     tasks = {}
 
     for fact_id in fact_list:
-        rt = HamsterTask(fact_id).get_remote_task()
+        rt = HamsterTask(fact_id, conf).get_remote_task()
         tasks[rt.task_id] = rt
 
     print 'Obtained %d tasks' % len(tasks)

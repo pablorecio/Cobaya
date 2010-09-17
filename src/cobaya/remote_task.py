@@ -30,7 +30,7 @@ class RemoteTask(object):
         self.ticket_number = ticket_number
         self.project = project
         self.date = date
-        self.time = time / 60 / 24 # in hoursº
+        self.time = time / 60 / 60 # in hoursº
         self.remote_sync = remote_sync
 
     def to_dict(self):

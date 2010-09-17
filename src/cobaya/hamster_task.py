@@ -36,9 +36,9 @@ class HamsterTask(object):
     """
 
 
-    def __init__(self, fact_id):
+    def __init__(self, fact_id, conf):
 
-        db = HamsterDB()
+        db = HamsterDB(conf)
         result = db.query("SELECT * FROM facts WHERE id = %s" % fact_id)
 
         self.id = fact_id
