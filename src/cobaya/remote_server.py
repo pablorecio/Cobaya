@@ -44,11 +44,12 @@ class RemoteServer(object):
         responses['server_error'] = []
         for task in data:
             json_data = json.dumps(task)
-            response = self.http.request(method="POST",
-                                         uri=self.url,
-                                         headers={'content-type':
-                                                  'application/json'},
-                                         body=json_data)
+            response = self.http.request(
+                method="POST",
+                uri=self.url,
+                headers={'content-type': 'application/json'},
+                body=json_data,
+                )
 
             ticket_project_date = (task['ticket'], task['project'],
                                    task['date'])
