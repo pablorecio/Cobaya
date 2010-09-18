@@ -25,15 +25,10 @@ class HamsterDB(object):
         db_filepath = conf.get_option('hamster.db')
         self.connection = sqlite3.connect(db_filepath)
 
-        categories_result = self.query("SELECT id, name FROM categories")
-        self.categories = {-1: 'None'}
-        for cat_id, cat_name in categories_result:
-            self.categories[cat_id] = cat_name
+        self.categories = dict(self.query("SELECT id, name FROM categories"))
+        self.categories[-1] = 'None'
 
-        tags_result = self.query("SELECT id, name FROM tags")
-        self.tags = {}
-        for tag_id, tag_name in tags_result:
-            self.tags[tag_id] = tag_name
+        self.tags = dict(self.query("SELECT id, name FROM tags"))
 
     def query(self, query_str):
         cursor = self.connection.cursor()
