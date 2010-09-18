@@ -44,7 +44,7 @@ class RemoteServer(object):
         responses['server_error'] = []
         for task in data:
             json_data = json.dumps(task)
-            response = self.http.request(
+            response, content = self.http.request(
                 method="POST",
                 uri=self.url,
                 headers={'content-type': 'application/json'},
@@ -53,25 +53,25 @@ class RemoteServer(object):
 
             ticket_project_date = (task['ticket'], task['project'],
                                    task['date'])
-            if response[0]['status'] == '200':
+            if response['status'] == '200':
                 responses['accepted'].append(task)
                 msg = "Ticket %s of %s project done on %s synced"
                 logging.info(msg % ticket_project_date)
-            elif response[0]['status'] == '400':  # bad request
+            elif response['status'] == '400':  # bad request
                 responses['rejected'].append(task)
                 msg = ("Ticket %s of %s project done on %s "
                        "is not allowed on the webservice")
                 logging.error(msg % ticket_project_date)
-            elif response[0]['status'] == '404':  # not found
+            elif response['status'] == '404':  # not found
                 responses['not_found'].append(task)
                 msg = ("Ticket %s of %s project done on %s "
                        "is not found on the webservice")
                 logging.error(msg % ticket_project_date)
-            elif response[0]['status'] == '409':  # conflict
+            elif response['status'] == '409':  # conflict
                 responses['duplicated'].append(task)
                 msg = "Ticket %s of %s project done on %s is already register"
                 logging.warning(msg % ticket_project_date)
-            elif response[0]['status'] == '500':  # server error
+            elif response['status'] == '500':  # server error
                 responses['server_error'].append(task)
 
         return responses
