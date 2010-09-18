@@ -37,37 +37,37 @@ class HamsterTask(object):
     """
 
     def __init__(self, fact_id, conf):
-
-        self.conf = conf
-        db = HamsterDB(self.conf)
-        result = db.query("SELECT * FROM facts WHERE id = %s" % fact_id)
-
         self.id = fact_id
-        self.start_time = result[0][2]
-        self.end_time = result[0][3]
-        self.description = result[0][4]
+        self.conf = conf
+
+        db = HamsterDB(self.conf)
+        columns = "activity_id, start_time, end_time, description"
+        result = db.query("SELECT %s FROM facts WHERE id = %s"
+                          % (columns, self.id))
+
+        (activity_id, self.start_time, self.end_time,
+         self.description) = result[0]
+
         if self.end_time:
             self.elapsed_time = _elapsed_time(self.start_time, self.end_time)
         else:
             self.elapsed_time = 0.
 
-        activity_id = result[0][1]
+        columns = "name, category_id"
+        result = db.query("SELECT %s FROM activities WHERE id = %s"
+                          % (columns, activity_id))
 
-        result = db.query("SELECT * FROM activities WHERE id = %s"
-                          % activity_id)
+        self.activity, category_id = result[0]
 
-        self.activity = result[0][1]
-
-        category_id = result[0][5]
         self.category = db.categories[category_id]
 
-        result = db.query("SELECT * FROM fact_tags WHERE fact_id = %s"
-                          % fact_id)
+        result = db.query("SELECT name FROM fact_tags WHERE fact_id = %s"
+                          % self.id)
 
         self.tags = []
 
         for row in result:
-            self.tags.append(db.tags[row[1]])
+            self.tags.append(db.tags[row[0]])
 
         if len(self.tags) > 0:
             self.tag = self.tags[0] or ''  # first tag
