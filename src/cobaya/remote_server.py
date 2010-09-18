@@ -51,27 +51,30 @@ class RemoteServer(object):
                 body=json_data,
                 )
 
-            ticket_project_date = (task['ticket'], task['project'],
-                                   task['date'])
-            if response['status'] == '200':
-                responses['accepted'].append(task)
-                msg = "Ticket %s of %s project done on %s synced"
-                logging.info(msg % ticket_project_date)
-            elif response['status'] == '400':  # bad request
-                responses['rejected'].append(task)
-                msg = ("Ticket %s of %s project done on %s "
-                       "is not allowed on the webservice")
-                logging.error(msg % ticket_project_date)
-            elif response['status'] == '404':  # not found
-                responses['not_found'].append(task)
-                msg = ("Ticket %s of %s project done on %s "
-                       "is not found on the webservice")
-                logging.error(msg % ticket_project_date)
-            elif response['status'] == '409':  # conflict
-                responses['duplicated'].append(task)
-                msg = "Ticket %s of %s project done on %s is already register"
-                logging.warning(msg % ticket_project_date)
-            elif response['status'] == '500':  # server error
-                responses['server_error'].append(task)
+            status_table = {
+                '200': ('accepted', logging.info,
+                        "Ticket %s of %s project done on %s synced"),
+                '400': ('rejected', logging.error,  # bad request
+                        "Ticket %s of %s project done on %s "
+                        "is not allowed on the webservice"),
+                '404': ('not_found', logging.error,
+                        "Ticket %s of %s project done on %s "
+                        "is not found on the webservice"),
+                '409': ('duplicated', logging.warning,  # conflict
+                        "Ticket %s of %s project done on %s "
+                        "is already register"),
+                '500': ('server_error', None, None),
+                }
+
+            try:
+                where, log, msg = status_table[response['status']]
+                responses[where].append(task)
+                if msg is not None:
+                    ticket_project_date = (task['ticket'], task['project'],
+                                           task['date'])
+                    log(msg % ticket_project_date)
+            except KeyError:
+                logging.error("The server returned a status "
+                              "I do not know how to handle")
 
         return responses
