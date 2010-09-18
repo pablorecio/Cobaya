@@ -101,12 +101,7 @@ def _elapsed_time(begin_time, end_time):
 
     Returns the elapsed time in seconds
     """
-    bt = datetime(int(begin_time[:4]), int(begin_time[5:7]),
-                  int(begin_time[8:10]), int(begin_time[11:13]),
-                  int(begin_time[14:16]), int(begin_time[17:19]))
-
-    et = datetime(int(end_time[:4]), int(end_time[5:7]),
-                  int(end_time[8:10]), int(end_time[11:13]),
-                  int(end_time[14:16]), int(end_time[17:19]))
+    bt = datetime.strptime(begin_time, "%Y-%m-%d %H:%M:%S")
+    et = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
 
     return float((et - bt).seconds)
