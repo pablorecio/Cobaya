@@ -51,7 +51,7 @@ class HamsterTask(object):
         if self.end_time:
             self.elapsed_time = _elapsed_time(self.start_time, self.end_time)
         else:
-            self.elapsed_time = 0.
+            self.elapsed_time = 0.0
 
         columns = "name, category_id"
         result = db.query("SELECT %s FROM activities WHERE id = %s"
