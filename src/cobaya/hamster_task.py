@@ -61,7 +61,7 @@ class HamsterTask(object):
 
         self.category = db.categories[category_id]
 
-        result = db.query("SELECT name FROM fact_tags WHERE fact_id = %s"
+        result = db.query("SELECT tag_id FROM fact_tags WHERE fact_id = %s"
                           % self.id)
 
         self.tags = []
