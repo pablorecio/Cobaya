@@ -101,7 +101,12 @@ def _elapsed_time(begin_time, end_time):
 
     Returns the elapsed time in seconds
     """
-    bt = datetime.strptime(begin_time, "%Y-%m-%d %H:%M:%S")
-    et = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+    def str2datetime(datestring):
+        if '.' in datestring:
+            datestring = datestring.split('.')[0]
+        return datetime.strptime(datestring, "%Y-%m-%d %H:%M:%S")
+
+    bt = str2datetime(begin_time)
+    et = str2datetime(end_time)
 
     return float((et - bt).seconds)
