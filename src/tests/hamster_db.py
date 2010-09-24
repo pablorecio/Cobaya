@@ -81,3 +81,37 @@ db = ~/hamster-test.db
 
         self.assertEquals(categories, db.categories)
         self.assertEquals(tags, db.tags)
+        db.close_connection()
+
+    def test_query_fact_by_id(self):
+        db = hamster_db.HamsterDB(self.conf)
+
+        query = "SELECT * FROM facts WHERE id = %s"
+
+        self.assertEquals(db.query(query % '3'),
+                          [(3, 9, u'2010-09-20 08:30:00',
+                            u'2010-09-20 11:45:00', u'Other description')])
+        self.assertEquals(db.query(query % '5'),
+                          [(5, 11, u'2010-09-21 08:00:00',
+                            u'2010-09-21 09:30:00', None)])
+        self.assertEquals(db.query(query % '9'), [])
+
+        db.close_connection()
+
+    def test_query_activity_by_id(self):
+        db = hamster_db.HamsterDB(self.conf)
+
+        query = "SELECT * FROM activities WHERE id = %s"
+
+        self.assertEquals(db.query(query % '8'),
+                          [(8, u'Ticket #1', None, None,
+                            None, 3, u'ticket #1')])
+        self.assertEquals(db.query(query % '10'),
+                          [(10, u'Ticket #8', None, None,
+                            None, 3, u'ticket #8')])
+        self.assertEquals(db.query(query % '15'), [])
+
+        db.close_connection()
+
+#    def test_query_tags_by_fact(self): # I should improve the database first
+                          
