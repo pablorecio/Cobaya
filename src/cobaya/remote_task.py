@@ -23,13 +23,12 @@ class RemoteTask(object):
     """ Represent a task ready to be send to a remote server
     """
 
-
     def __init__(self, task_id, ticket_number, project,
                  date, time, description, remote_sync=False):
 
         self.task_id = task_id
         self.date = date
-        self.time = time / 60 / 60 # in hours
+        self.time = time / 60 / 60  # in hours
         self.remote_sync = remote_sync
         self.ticket_number = ticket_number
         self.project = project

@@ -23,6 +23,7 @@ import ConfigParser
 import os
 import sys
 
+
 class ConfigError(Exception):
     pass
 
@@ -60,7 +61,6 @@ description_field = description
 
         return self.parser.read(self.conf_files)
 
-
     def get_option(self, option):
         parts = option.split('.')
         if not parts or len(parts) != 2:
@@ -69,6 +69,6 @@ description_field = description
         section, option = parts
         value = self.parser.get(section, option)
         if value.startswith('~'):
-            value =  value.replace('~', os.path.expanduser('~'))
+            value = value.replace('~', os.path.expanduser('~'))
 
         return value
