@@ -35,16 +35,19 @@ class HamsterDB(object):
         db_filepath = conf.get_option('hamster.db')
         self.connection = sqlite3.connect(db_filepath)
 
-        categories_result = self.query("SELECT id, name FROM categories")
+        facts_result = self._query("SELECT id FROM facts")
+        self.all_facts_id = [i[0] for i in facts_result]
+
+        categories_result = self._query("SELECT id, name FROM categories")
         self.categories = dict([(cat_id, cat_name)
                                 for cat_id, cat_name in categories_result])
         self.categories[-1] = 'None'
 
-        tags_result = self.query("SELECT id, name FROM tags")
+        tags_result = self._query("SELECT id, name FROM tags")
         self.tags = dict([(tag_id, tag_name)
                           for tag_id, tag_name in tags_result])
 
-    def query(self, query_str):
+    def _query(self, query_str):
         cursor = self.connection.cursor()
         cursor.execute(query_str)
         return cursor.fetchall()
@@ -61,7 +64,7 @@ class HamsterDB(object):
         columns = 'activity_id, start_time, end_time, description'
 
         query = "SELECT %s FROM facts WHERE id = %s"
-        result = self.query(query % (columns, fact_id))
+        result = self._query(query % (columns, fact_id))
 
         if result:
             return result[0]  # there only one fact with the id
@@ -79,7 +82,7 @@ class HamsterDB(object):
         columns = 'name, category_id'
 
         query = "SELECT %s FROM activities WHERE id = %s"
-        result = self.query(query % (columns, activity_id))
+        result = self._query(query % (columns, activity_id))
 
         if result:
             return result[0]  # there only one fact with the id
@@ -96,11 +99,11 @@ class HamsterDB(object):
         exception will be raise
         """
         check_query = "SELECT id FROM facts WHERE id = %s"
-        if not self.query(check_query % fact_id):
+        if not self._query(check_query % fact_id):
             raise NoHamsterData('facts', fact_id)
 
         query = "SELECT tag_id FROM fact_tags WHERE fact_id = %s"
-        return [self.tags[row[0]] for row in self.query(query % fact_id)]
+        return [self.tags[row[0]] for row in self._query(query % fact_id)]
 
     def close_connection(self):
         self.connection.close()

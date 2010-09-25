@@ -38,36 +38,23 @@ class HamsterTask(object):
 
     def __init__(self, fact_id, conf):
 
-        self.conf = conf
-        db = HamsterDB(self.conf)
-        result = db.query("SELECT * FROM facts WHERE id = %s" % fact_id)
-
         self.id = fact_id
-        self.start_time = result[0][2]
-        self.end_time = result[0][3]
-        self.description = result[0][4]
+        self.conf = conf
+
+        db = HamsterDB(self.conf)
+
+        (activity_id, self.start_time,
+         self.end_time, self.description) = db.get_fact_by_id(self.id)
+
         if self.end_time:
             self.elapsed_time = _elapsed_time(self.start_time, self.end_time)
         else:
-            self.elapsed_time = 0.
+            self.elapsed_time = 0.0
 
-        activity_id = result[0][1]
-
-        result = db.query("SELECT * FROM activities WHERE id = %s"
-                          % activity_id)
-
-        self.activity = result[0][1]
-
-        category_id = result[0][5]
+        (self.activity, category_id) = db.get_activity_by_id(activity_id)
         self.category = db.categories[category_id]
 
-        result = db.query("SELECT * FROM fact_tags WHERE fact_id = %s"
-                          % fact_id)
-
-        self.tags = []
-
-        for row in result:
-            self.tags.append(db.tags[row[1]])
+        self.tags = db.get_tags_by_fact_id(self.id)
 
         if len(self.tags) > 0:
             self.tag = self.tags[0] or ''  # first tag
@@ -75,6 +62,12 @@ class HamsterTask(object):
             self.tag = ''
 
         db.close_connection()
+
+    def __str__(self):
+        tags_repr = ', '.join(self.tags)
+        return u"[%s@%s] %s - %s [%s]" % (self.activity, self.category,
+                                          self.start_time, self.end_time,
+                                          tags_repr)
 
     def get_remote_task(self):
         ticket_field = self.conf.get_option('tasks.ticket_field')
