@@ -77,7 +77,8 @@ db = ~/hamster-test.db
                       5: u'egg-project',
                       -1: u'None', }
         tags = {1: u'awesome-tag',
-                2: u'not-so-awesome-tag', }
+                2: u'not-so-awesome-tag',
+                3: u'just-another-tag', }
 
         self.assertEquals(categories, db.categories)
         self.assertEquals(tags, db.tags)
@@ -94,6 +95,9 @@ db = ~/hamster-test.db
         self.assertEquals(db.query(query % '5'),
                           [(5, 11, u'2010-09-21 08:00:00',
                             u'2010-09-21 09:30:00', None)])
+        self.assertEquals(db.query(query % '8'),
+                          [(8, 13, u'2010-09-22 08:00:00',
+                           u'2010-09-22 15:00:00', u'Doing as I was working')])
         self.assertEquals(db.query(query % '9'), [])
 
         db.close_connection()
@@ -109,9 +113,25 @@ db = ~/hamster-test.db
         self.assertEquals(db.query(query % '10'),
                           [(10, u'Ticket #8', None, None,
                             None, 3, u'ticket #8')])
+        self.assertEquals(db.query(query % '13'),
+                          [(13, u'Procastination', None, None,
+                            None, -1, u'procastination')])
         self.assertEquals(db.query(query % '15'), [])
 
         db.close_connection()
 
-#    def test_query_tags_by_fact(self): # I should improve the database first
-                          
+    def test_query_tags_by_fact(self):
+        db = hamster_db.HamsterDB(self.conf)
+
+        query = "SELECT * FROM fact_tags WHERE fact_id = %s"
+
+        self.assertEquals([db.tags[i[1]] for i in db.query(query % '3')],
+                          ['awesome-tag'])
+        self.assertEquals([db.tags[i[1]] for i in db.query(query % '5')],
+                          ['awesome-tag'])
+        self.assertEquals([db.tags[i[1]] for i in db.query(query % '7')],
+                          ['just-another-tag', 'not-so-awesome-tag'])
+        self.assertEquals([db.tags[i[1]] for i in db.query(query % '8')],
+                          [])
+
+        db.close_connection()
