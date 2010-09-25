@@ -98,8 +98,7 @@ class HamsterDB(object):
         If there are no fact with id == fact_id, a NoHamsterData
         exception will be raise
         """
-        check_query = "SELECT id FROM facts WHERE id = %s"
-        if not self._query(check_query % fact_id):
+        if not fact_id in self.all_facts_id:
             raise NoHamsterData('facts', fact_id)
 
         query = "SELECT tag_id FROM fact_tags WHERE fact_id = %s"

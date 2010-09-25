@@ -21,7 +21,6 @@ convert it to easy-to-handle data"""
 import re
 from datetime import datetime
 
-from cobaya.hamster_db import HamsterDB
 from cobaya.remote_task import RemoteTask
 
 
@@ -36,12 +35,10 @@ class HamsterTask(object):
       * time expended
     """
 
-    def __init__(self, fact_id, conf):
+    def __init__(self, fact_id, conf, db):
 
         self.id = fact_id
         self.conf = conf
-
-        db = HamsterDB(self.conf)
 
         (activity_id, self.start_time,
          self.end_time, self.description) = db.get_fact_by_id(self.id)
@@ -60,8 +57,6 @@ class HamsterTask(object):
             self.tag = self.tags[0] or ''  # first tag
         else:
             self.tag = ''
-
-        db.close_connection()
 
     def __str__(self):
         tags_repr = ', '.join(self.tags)
