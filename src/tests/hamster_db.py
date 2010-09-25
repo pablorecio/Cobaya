@@ -70,6 +70,7 @@ db = ~/hamster-test.db
 
     def test_database_load(self):
         db = hamster_db.HamsterDB(self.conf)
+        facts_id = [1, 3, 5, 6, 7, 8]
         categories = {1: u'Trabajo',
                       2: u'Día a día',
                       3: u'foo-project',
@@ -80,6 +81,7 @@ db = ~/hamster-test.db
                 2: u'not-so-awesome-tag',
                 3: u'just-another-tag', }
 
+        self.assertEquals(facts_id, db.all_facts_id)
         self.assertEquals(categories, db.categories)
         self.assertEquals(tags, db.tags)
         db.close_connection()
@@ -87,51 +89,48 @@ db = ~/hamster-test.db
     def test_query_fact_by_id(self):
         db = hamster_db.HamsterDB(self.conf)
 
-        query = "SELECT * FROM facts WHERE id = %s"
-
-        self.assertEquals(db.query(query % '3'),
-                          [(3, 9, u'2010-09-20 08:30:00',
-                            u'2010-09-20 11:45:00', u'Other description')])
-        self.assertEquals(db.query(query % '5'),
-                          [(5, 11, u'2010-09-21 08:00:00',
-                            u'2010-09-21 09:30:00', None)])
-        self.assertEquals(db.query(query % '8'),
-                          [(8, 13, u'2010-09-22 08:00:00',
-                           u'2010-09-22 15:00:00', u'Doing as I was working')])
-        self.assertEquals(db.query(query % '9'), [])
+        self.assertEquals(db.get_fact_by_id(3),
+                          (9, u'2010-09-20 08:30:00',
+                           u'2010-09-20 11:45:00',
+                           u'Other description'))
+        self.assertEquals(db.get_fact_by_id(5),
+                          (11, u'2010-09-21 08:00:00',
+                           u'2010-09-21 09:30:00', None))
+        self.assertEquals(db.get_fact_by_id(8),
+                          (13, u'2010-09-22 08:00:00',
+                           u'2010-09-22 15:00:00',
+                           u'Doing as I was working'))
+        self.assertRaises(hamster_db.NoHamsterData,
+                          db.get_fact_by_id, 9)
 
         db.close_connection()
 
     def test_query_activity_by_id(self):
         db = hamster_db.HamsterDB(self.conf)
 
-        query = "SELECT * FROM activities WHERE id = %s"
-
-        self.assertEquals(db.query(query % '8'),
-                          [(8, u'Ticket #1', None, None,
-                            None, 3, u'ticket #1')])
-        self.assertEquals(db.query(query % '10'),
-                          [(10, u'Ticket #8', None, None,
-                            None, 3, u'ticket #8')])
-        self.assertEquals(db.query(query % '13'),
-                          [(13, u'Procastination', None, None,
-                            None, -1, u'procastination')])
-        self.assertEquals(db.query(query % '15'), [])
+        self.assertEquals(db.get_activity_by_id(8),
+                          (u'Ticket #1', 3))
+        self.assertEquals(db.get_activity_by_id(10),
+                          (u'Ticket #8', 3))
+        self.assertEquals(db.get_activity_by_id(13),
+                          (u'Procastination', -1))
+        self.assertRaises(hamster_db.NoHamsterData,
+                          db.get_activity_by_id, 15)
 
         db.close_connection()
 
     def test_query_tags_by_fact(self):
         db = hamster_db.HamsterDB(self.conf)
 
-        query = "SELECT * FROM fact_tags WHERE fact_id = %s"
-
-        self.assertEquals([db.tags[i[1]] for i in db.query(query % '3')],
+        self.assertEquals(db.get_tags_by_fact_id(3),
                           ['awesome-tag'])
-        self.assertEquals([db.tags[i[1]] for i in db.query(query % '5')],
+        self.assertEquals(db.get_tags_by_fact_id(5),
                           ['awesome-tag'])
-        self.assertEquals([db.tags[i[1]] for i in db.query(query % '7')],
+        self.assertEquals(db.get_tags_by_fact_id(7),
                           ['just-another-tag', 'not-so-awesome-tag'])
-        self.assertEquals([db.tags[i[1]] for i in db.query(query % '8')],
+        self.assertEquals(db.get_tags_by_fact_id(8),
                           [])
+        self.assertRaises(hamster_db.NoHamsterData,
+                          db.get_tags_by_fact_id ,13)
 
         db.close_connection()
