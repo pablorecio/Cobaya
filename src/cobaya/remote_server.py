@@ -21,6 +21,10 @@ import json
 
 import logging
 
+
+from cobaya.password import get_password
+
+
 LOG_FILENAME = 'cobaya.log'
 logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
@@ -30,7 +34,7 @@ class RemoteServer(object):
     def __init__(self, conf):
         self.url = conf.get_option('remote.url')
         user = conf.get_option('remote.user')
-        passwd = conf.get_option('remote.password')
+        passwd = get_password(conf)
 
         self.http = httplib2.Http()
         self.http.add_credentials(user, passwd)
