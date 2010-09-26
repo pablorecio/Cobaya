@@ -76,15 +76,14 @@ def get_all_tasks(conf):
     """
 
     db = HamsterDB(conf)
-    result = db.query("SELECT id FROM facts")
-    db.close_connection()
 
-    fact_list = [x[0] for x in result]
+    fact_list = db.all_facts_id
     tasks = {}
 
     for fact_id in fact_list:
-        rt = HamsterTask(fact_id, conf).get_remote_task()
+        rt = HamsterTask(fact_id, conf, db).get_remote_task()
         tasks[rt.task_id] = rt
+    db.close_connection()
 
     print 'Obtained %d tasks' % len(tasks)
     return tasks

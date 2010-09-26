@@ -21,7 +21,6 @@ convert it to easy-to-handle data"""
 import re
 from datetime import datetime
 
-from cobaya.hamster_db import HamsterDB
 from cobaya.remote_task import RemoteTask
 
 
@@ -36,45 +35,34 @@ class HamsterTask(object):
       * time expended
     """
 
-    def __init__(self, fact_id, conf):
+    def __init__(self, fact_id, conf, db):
+
         self.id = fact_id
         self.conf = conf
 
-        db = HamsterDB(self.conf)
-        columns = "activity_id, start_time, end_time, description"
-        result = db.query("SELECT %s FROM facts WHERE id = %s"
-                          % (columns, self.id))
-
-        (activity_id, self.start_time, self.end_time,
-         self.description) = result[0]
+        (activity_id, self.start_time,
+         self.end_time, self.description) = db.get_fact_by_id(self.id)
 
         if self.end_time:
             self.elapsed_time = _elapsed_time(self.start_time, self.end_time)
         else:
             self.elapsed_time = 0.0
 
-        columns = "name, category_id"
-        result = db.query("SELECT %s FROM activities WHERE id = %s"
-                          % (columns, activity_id))
-
-        self.activity, category_id = result[0]
-
+        (self.activity, category_id) = db.get_activity_by_id(activity_id)
         self.category = db.categories[category_id]
 
-        result = db.query("SELECT name FROM fact_tags WHERE fact_id = %s"
-                          % self.id)
-
-        self.tags = []
-
-        for row in result:
-            self.tags.append(db.tags[row[0]])
+        self.tags = db.get_tags_by_fact_id(self.id)
 
         if len(self.tags) > 0:
             self.tag = self.tags[0] or ''  # first tag
         else:
             self.tag = ''
 
-        db.close_connection()
+    def __str__(self):
+        tags_repr = ', '.join(self.tags)
+        return u"[%s@%s] %s - %s [%s]" % (self.activity, self.category,
+                                          self.start_time, self.end_time,
+                                          tags_repr)
 
     def get_remote_task(self):
         ticket_field = self.conf.get_option('tasks.ticket_field')
