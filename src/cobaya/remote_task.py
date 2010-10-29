@@ -17,6 +17,7 @@
 ###############################################################################
 
 import json
+from ConfigParser import NoOptionError
 
 
 class RemoteTask(object):
@@ -24,7 +25,7 @@ class RemoteTask(object):
     """
 
     def __init__(self, task_id, ticket_number, project,
-                 date, time, description, remote_sync=False):
+                 date, time, description, conf, remote_sync=False):
 
         self.task_id = task_id
         self.date = date
@@ -32,13 +33,22 @@ class RemoteTask(object):
         self.remote_sync = remote_sync
         self.ticket_number = ticket_number
         self.project = project
+        self.conf = conf
         self.description = description
 
     def to_dict(self):
-        data = {'ticket': self.ticket_number, 'project': self.project,
-                'date': self.date, 'time': self.time, 'task_id': self.task_id,
+        data = {'ticket': self.ticket_number,
+                'project': self.project_name(self.project),
+                'date': self.date, 'time': self.time,
+                'task_id': self.task_id,
                 'description': self.description}
         return data
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+    def project_name(self, project):
+        try:
+            return self.conf.get_option("synonyms.%s" % project)
+        except NoOptionError:
+            return project

@@ -81,7 +81,7 @@ class HamsterTask(object):
 
         return RemoteTask(self.id, ticket_number, project_name,
                           self.start_time[:10], self.elapsed_time,
-                          description)
+                          description, self.conf)
 
 
 def _elapsed_time(begin_time, end_time):
