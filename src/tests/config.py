@@ -69,12 +69,25 @@ class ConfigTests(unittest.TestCase):
         # test only default conf
         conf.load()
         user_path = os.path.join(self.temp_root, 'home', 'user')
+        hamster_base_path = os.path.join(user_path, '.local', 'share',
+                                         'hamster-applet')
         self.assertEquals(conf.get_option('hamster.db'),
-                          os.path.join(user_path, '.local', 'share',
-                                       'hamster-applet', 'hamster.db'))
+                          os.path.join(hamster_base_path, 'hamster.db'))
+        self.assertEquals(conf.get_option('hamster.log_file'),
+                          os.path.join(hamster_base_path, 'synced-tasks.dat'))
+        
         self.assertEquals(conf.get_option('remote.url'), '')
         self.assertEquals(conf.get_option('remote.user'), '')
         self.assertEquals(conf.get_option('remote.password'), '')
+
+        self.assertEquals(conf.get_option('tasks.ticket_field'),
+                          'activity')
+        self.assertEquals(conf.get_option('tasks.project_field'),
+                          'tags')
+        self.assertEquals(conf.get_option('tasks.description_field'),
+                          'description')
+        self.assertEquals(conf.get_option('tasks.security_days'),
+                          '10')
 
 
         # then add a system wide conf
@@ -84,12 +97,17 @@ db = /var/hamster/hamster.db
 
 [remote]
 url = http://www.example.com/web-service/hamster
+
+[tasks]
+security_days = 5
 """)
         conf.load()
         self.assertEquals(conf.get_option('hamster.db'),
                           '/var/hamster/hamster.db')
         self.assertEquals(conf.get_option('remote.url'),
                           'http://www.example.com/web-service/hamster')
+        self.assertEquals(conf.get_option('tasks.security_days'),
+                          '5')
 
 
         # add user conf

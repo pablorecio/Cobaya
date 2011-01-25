@@ -44,6 +44,7 @@ password =
 ticket_field = activity
 project_field = tags
 description_field = description
+security_days = 10
 """
 
     def __init__(self):
