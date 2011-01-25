@@ -64,6 +64,10 @@ class HamsterTask(object):
                                           self.start_time, self.end_time,
                                           tags_repr)
 
+    def get_object_dates(self):
+        return (_str2datetime(self.start_time),
+                _str2datetime(self.end_time))
+
     def get_remote_task(self):
         ticket_field = self.conf.get_option('tasks.ticket_field')
         project_field = self.conf.get_option('tasks.project_field')
@@ -84,17 +88,19 @@ class HamsterTask(object):
                           description, self.conf)
 
 
+def _str2datetime(datestring):
+    if '.' in datestring:
+        datestring = datestring.split('.')[0]
+    return datetime.strptime(datestring, "%Y-%m-%d %H:%M:%S")
+
+
 def _elapsed_time(begin_time, end_time):
     """Assuming format YYYY-MM-DD hh:mm:ss
 
     Returns the elapsed time in seconds
     """
-    def str2datetime(datestring):
-        if '.' in datestring:
-            datestring = datestring.split('.')[0]
-        return datetime.strptime(datestring, "%Y-%m-%d %H:%M:%S")
 
-    bt = str2datetime(begin_time)
-    et = str2datetime(end_time)
+    bt = _str2datetime(begin_time)
+    et = _str2datetime(end_time)
 
     return float((et - bt).seconds)
