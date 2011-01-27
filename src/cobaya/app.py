@@ -16,7 +16,7 @@
 #               2010, Lorenzo Gil Sanchez <lgs@yaco.es>                       #
 ###############################################################################
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from optparse import OptionParser
 from os import path
 
@@ -79,20 +79,21 @@ def get_all_tasks(conf):
     db = HamsterDB(conf)
 
     fact_list = db.all_facts_id
-    security_days = int(conf.get_option('hamster.security_days'))
+    security_days = int(conf.get_option('tasks.security_days'))
     today = datetime.today()
 
     tasks = {}
 
     for fact_id in fact_list:
         ht = HamsterTask(fact_id, conf, db)
-        end_time = ht.get_object_dates()[1]
-        if today - security_days >= end_time:
-            rt = ht.get_remote_task()
-            tasks[rt.task_id] = rt
+        if ht.end_time:
+            end_time = ht.get_object_dates()[1]
+            if today - timedelta(security_days) <= end_time:
+                rt = ht.get_remote_task()
+                tasks[rt.task_id] = rt
 
     db.close_connection()
-
+    
     print 'Obtained %d tasks' % len(tasks)
     return tasks
 
