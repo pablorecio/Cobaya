@@ -17,6 +17,7 @@
 ###############################################################################
 
 import json
+
 from ConfigParser import NoOptionError
 
 
@@ -48,7 +49,9 @@ class RemoteTask(object):
         return json.dumps(self.to_dict())
 
     def project_name(self, project):
-        try:
-            return self.conf.get_option("synonyms.%s" % project)
-        except NoOptionError:
-            return project
+        if self.conf.parser.has_section('synonyms'):
+            try:
+                return self.conf.get_option("synonyms.%s" % project)
+            except NoOptionError:
+                pass
+        return project
