@@ -45,7 +45,9 @@ setup(
     license="GPL 3",
     keywords="hamster workreport",
     url='http://github.com/pyriku/Cobaya',
-
+    install_requires=[
+        'httplib2',
+    ],
     packages=find_packages('src'),
     package_dir = {'': 'src'},
     zip_safe=True,
