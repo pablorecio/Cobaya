@@ -53,8 +53,21 @@ class CobayaApp(object):
         for id in self.tasks:
             if self.tasks[id].remote_sync == False and \
                self.tasks[id].time != 0.0:  # not synced or not finished
-                data.append(self.tasks[id].to_dict())
+                data = self.append_and_merge(data, id)
         return data
+
+    def append_and_merge(self, data, id):
+         d = self.tasks[id].to_dict()
+         band = False
+         for i in range(len(data)):
+             if data[i]['date'] == d['date'] and \
+                     data[i]['project'] == d['project'] and \
+                     data[i]['ticket'] == d['ticket']:
+                 data[i]['time'] += d['time']
+                 band = True
+         if not band or not len(data):
+             data.append(d)
+         return data
 
     def perform_notification(self):
         unsynced_data = self.generate_unsynced_data()
