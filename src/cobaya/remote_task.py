@@ -33,7 +33,10 @@ class RemoteTask(object):
         self.time = time / 60 / 60  # in hours
         self.remote_sync = remote_sync
         self.ticket_number = ticket_number
-        self.project = project
+        if isinstance(project, list):
+            self.project = project[0]
+        else:
+            self.project = project
         self.conf = conf
         self.description = description
 
