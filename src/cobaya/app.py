@@ -64,6 +64,9 @@ class CobayaApp(object):
                      data[i]['project'] == d['project'] and \
                      data[i]['ticket'] == d['ticket']:
                  data[i]['time'] += d['time']
+                 if not d['description'] in data[i]['description']:
+                     data[i]['description'] = '%s ||| %s' % (
+                         data[i]['description'], d['description'])
                  band = True
          if not band or not len(data):
              data.append(d)
