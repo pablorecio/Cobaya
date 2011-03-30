@@ -57,24 +57,23 @@ class CobayaApp(object):
         return data
 
     def append_and_merge(self, data, id):
-         d = self.tasks[id].to_dict()
-         band = False
-         for i in range(len(data)):
-             if data[i]['date'] == d['date'] and \
-                     data[i]['project'] == d['project'] and \
-                     data[i]['ticket'] == d['ticket']:
-                 data[i]['time'] += d['time']
-                 if (d['description'] and not data[i]['description']) or \
-                    (d['description'] and not d['description'] in data[i]['description']):
-                     if data[i]['description']:
-                        data[i]['description'] = '%s ||| %s' % (
-                                                 data[i]['description'], d['description'])
-                     else:
+        d = self.tasks[id].to_dict()
+        band = False
+        for i in range(len(data)):
+            if data[i]['date'] == d['date'] and \
+                    data[i]['project'] == d['project'] and \
+                    data[i]['ticket'] == d['ticket']:
+                data[i]['time'] += d['time']
+                if (d['description'] and not data[i]['description']) or \
+                   (d['description'] and not d['description'] in data[i]['description']):
+                    if data[i]['description']:
+                        data[i]['description'] = '%s ||| %s' % (data[i]['description'], d['description'])
+                    else:
                         data[i]['description'] = d['description']
-                 band = True
-         if not band or not len(data):
-             data.append(d)
-         return data
+                band = True
+        if not band or not len(data):
+            data.append(d)
+        return data
 
     def perform_notification(self):
         unsynced_data = self.generate_unsynced_data()
@@ -113,7 +112,7 @@ def get_all_tasks(conf):
                 tasks[rt.task_id] = rt
 
     db.close_connection()
-    
+
     print 'Obtained %d tasks' % len(tasks)
     return tasks
 
