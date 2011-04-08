@@ -24,7 +24,7 @@ def read(*rnames):
 
 setup(
     name="Cobaya",
-    version="0.5",
+    version="0.7",
     author="Pablo Recio Quijano",
     author_email="precio@yaco.es",
     description="Command line programm to send Hamster task to a remote system",
