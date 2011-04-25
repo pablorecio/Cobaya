@@ -15,24 +15,15 @@
 # Copyright (C) 2010, Lorenzo Gil Sanchez, <lgs@yaco.es>                      #
 ###############################################################################
 
-import os
 from setuptools import setup, find_packages
 
 
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-
 setup(
     name="Cobaya",
-    version="0.7",
+    version="0.7.1",
     author="Pablo Recio Quijano",
     author_email="precio@yaco.es",
     description="Command line programm to send Hamster task to a remote system",
-    long_description=(
-        read('README')
-        + '\n\n' +
-        read('CHANGES')
-        ),
     classifiers=[
         'Development Status :: 1 - Planning',
         'Environment :: Console',
